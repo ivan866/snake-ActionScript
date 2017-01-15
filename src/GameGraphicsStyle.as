@@ -1,7 +1,7 @@
 package {
 	
 	/**
-	 * ...
+	 * Graphic parameters: colors, line styles
 	 * @author ivan866
 	 */
 	public class GameGraphicsStyle {

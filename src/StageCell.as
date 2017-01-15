@@ -2,29 +2,29 @@ package {
 	import flash.display.Sprite;
 	
 	/**
-	 * ...
+	 * Cell graphics
 	 * @author ivan866
 	 */
 	public class StageCell extends Sprite {
 		
-		public function StageCell(type:int, cellSize:uint, gameGraphicsStyle:GameGraphicsStyle) {
+		public function StageCell(type:int, stageParams:Object, gameGraphicsStyle:GameGraphicsStyle) {
 			if (type == -1) {
 				return;
 			}
-			this.graphics.lineStyle(gameGraphicsStyle.fgLineWidth, gameGraphicsStyle.fgColor);
+			graphics.lineStyle(gameGraphicsStyle.fgLineWidth, gameGraphicsStyle.fgColor);
 			if (type == 1) {
-				this.graphics.beginFill(0x404040);
+				graphics.beginFill(0x404040);
 			} else if (type == 0) {
-				this.graphics.beginFill(gameGraphicsStyle.bgColor);
+				graphics.beginFill(gameGraphicsStyle.bgColor);
 			} else if (type == 2) {
-				this.graphics.beginFill(0xFFFF00);
+				graphics.beginFill(0xFFFF00);
 			} else if (type == 100) {
-				this.graphics.beginFill(0x80FFFF);
+				graphics.beginFill(0x80FFFF);
 			}
-			this.graphics.drawRect(0, 0, cellSize, cellSize);
-			this.graphics.endFill();
+			graphics.drawRect(0, 0, stageParams.cellSize, stageParams.cellSize);
+			graphics.endFill();
 			
-			this.cacheAsBitmap = true;
+			cacheAsBitmap = true;
 		}
 	
 	}
