@@ -56,7 +56,7 @@ package {
 				for (var cellY:uint = 0; cellY < params.cellYMax; cellY++) {
 					var cell:StageCell = new StageCell(this, stageArray[cellX][cellY], gameGraphicsStyle);
 					setCell(cellX, cellY, cell);
-					setCellXY(cellX, cellY, cellX * params.cellSize, cellY * params.cellSize);
+					cell.setXY(cellX * params.cellSize, cellY * params.cellSize);
 					
 					addChild(cell);
 				}
@@ -80,31 +80,10 @@ package {
 			stageArray[cellX][cellY] = cell;
 		}
 		
-		public function setCellXY(cellX:uint, cellY:uint, x:Number, y:Number):void {
-			var cell:StageCell = getCell(cellX, cellY);
-			if (cell.hasTremor()) {
-				cell.pauseTremor();
-			}
-			
-			cell.x = x;
-			cell.y = y;
-			
-			setCellTremor(cellX,cellY);
-		}
-		
-		public function setCellTremor(cellX:uint, cellY:uint):void {
-			var cell:Object = getCell(cellX, cellY);
-			var tremor:TweenMax = new TweenMax(cell, Math.random() * 0.333 + 0.175, {x: cell.x + Math.random() * params.cellShake, y: cell.y + Math.random() * params.cellShake});
-			tremor.currentProgress = Math.random();
-			tremor.repeat = -1;
-			tremor.yoyo = true;
-			cell.setTremor(tremor);
-		}
-		
 		public function exchangeCells(cellX:uint, cellY:uint, newCellX:uint, newCellY:uint):StageCell {
 			var exchange:StageCell = stageArray[newCellX][newCellY];
 			setCell(newCellX, newCellY, stageArray[cellX][cellY]);
-			setCellXY(newCellX, newCellY, newCellX * params.cellSize, newCellY * params.cellSize);
+			getCell(newCellX, newCellY).setXY(newCellX * params.cellSize, newCellY * params.cellSize);
 			return exchange;
 		}
 	

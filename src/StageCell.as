@@ -23,6 +23,17 @@ package {
 			cacheAsBitmap = true;
 		}
 		
+		public function setXY(x:Number, y:Number):void {
+			if (tremor) {
+				tremor.pause();
+			}
+			
+			this.x = x;
+			this.y = y;
+			
+			setTremor();
+		}
+		
 		public function changeColor(color:uint):void {
 			if (type == -1) {
 				return;
@@ -54,16 +65,12 @@ package {
 			changeColor(color);
 		}
 		
-		public function hasTremor():Boolean {
-			return tremor != null;
-		}
-		
-		public function setTremor(tremor:TweenMax):void {
-			this.tremor = tremor;
-		}
-		
-		public function pauseTremor():void {
-			tremor.pause();
+		public function setTremor():void {
+			var stageParams:Object = gameStage.getStageParams();
+			tremor = new TweenMax(this, Math.random() * 0.333 + 0.175, {x: x + Math.random() * stageParams.cellShake, y: y + Math.random() * stageParams.cellShake});
+			tremor.currentProgress = Math.random();
+			tremor.repeat = -1;
+			tremor.yoyo = true;
 		}
 		
 	

@@ -40,7 +40,7 @@ package {
 				} else if (nextCell.getType() == 1) {
 					
 				} else if (nextCell.getType() == 2) {
-					//new TweenMax(nextCell.cell,0.75,
+					nextCell.setType(100);
 					
 					checkPrize();
 				}
