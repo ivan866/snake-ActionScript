@@ -20,15 +20,15 @@ package {
 			stage.color = 0x400080;
 			
 			gameStage = new GameStage({cellXMax: 32, cellYMax: 24, cellSize: 16, cellShake: 5});
-			playerChar = new PlayerChar(gameStage);
-			
 			gameStage.drawStage(new GameGraphicsStyle(5, 1, 0x400080, 0x00FF40));
 			gameStage.x = stage.stageWidth / 2 - gameStage.width / 2;
 			gameStage.y = stage.stageHeight / 2 - gameStage.height / 2;
 			stage.addChild(gameStage);
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
-			
+
+			playerChar = new PlayerChar(gameStage);
 			moveTimer = new Timer(100);
+			
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
 		}
 		
 		
@@ -54,7 +54,7 @@ package {
 		private function moveTimerHandler(e:TimerEvent):void {
 			moveTimer.stop();
 			
-			playerChar.move(gameStage, moveCompleteHandler);
+			playerChar.move(moveCompleteHandler);
 			
 			function moveCompleteHandler():void {
 				moveTimer.start();

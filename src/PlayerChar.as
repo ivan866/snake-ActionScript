@@ -9,40 +9,54 @@ package {
 	 */
 	public class PlayerChar {
 		
+		private var gameStage:GameStage;
 		private var XYArray:Array;
 		public function PlayerChar(gameStage:GameStage) {
+			this.gameStage = gameStage;
 			var stageParams:Object = gameStage.getStageParams();
 			XYArray = [[Math.floor(Math.random() * stageParams.cellXMax), Math.floor(Math.random() * stageParams.cellYMax)]];
 			while (!gameStage.getStageShapeBitmap().bitmapData.hitTest(new Point(), 0, new Point(XYArray[0][0] * stageParams.cellSize, XYArray[0][1] * stageParams.cellSize))) {
 				XYArray = [[Math.floor(Math.random() * stageParams.cellXMax), Math.floor(Math.random() * stageParams.cellYMax)]];
 			}
 			
-			gameStage.setCellType(XYArray[0][0],XYArray[0][1],100);
+			gameStage.getCell(XYArray[0][0],XYArray[0][1]).setType(100);
 		}
 		
 		
-		public function move(gameStage:GameStage,callback:Function):void {
+		public function move(callback:Function):void {
 			for (var posI:uint = 0; posI < XYArray.length; posI++) {
 				var stageParams:Object = gameStage.getStageParams();
 				
 				var cellX:uint = XYArray[posI][0];
 				var cellY:uint = XYArray[posI][1];
-				var cell:Object = gameStage.getCell(cellX, cellY);
+				var cell:StageCell = gameStage.getCell(cellX, cellY);
 				var nextCellX:uint = cellX + speedX;
 				var nextCellY:uint = cellY + speedY;
-				lastSpeedX = speedX;
-				lastSpeedY = speedY;
+				var nextCell:StageCell = gameStage.getCell(nextCellX, nextCellY);
+								
+				if (nextCell.getType() == 0) {
+					new TweenMax(cell, 0.75, {x: nextCellX * stageParams.cellSize, y: nextCellY * stageParams.cellSize, ease: Elastic.easeInOut, onComplete: callback});
+					gameStage.setCell(nextCellX, nextCellY, gameStage.exchangeCells(nextCellX, nextCellY, cellX, cellY));
+				} else if (nextCell.getType() == 1) {
+					
+				} else if (nextCell.getType() == 2) {
+					//new TweenMax(nextCell.cell,0.75,
+					
+					checkPrize();
+				}
 				
 				XYArray[posI][0] = nextCellX;
 				XYArray[posI][1] = nextCellY;
+				lastSpeedX = speedX;
+				lastSpeedY = speedY;
 				
-				new TweenMax(cell.cell, 0.75, {x: nextCellX * stageParams.cellSize, y: nextCellY * stageParams.cellSize, ease: Elastic.easeInOut, onComplete: callback});
-				gameStage.setCell(gameStage.exchangeCells(nextCellX, nextCellY, cellX, cellY), nextCellX, nextCellY);
-				
-				gameStage.addChildAt(cell.cell, gameStage.numChildren);
 				//TODO addchildat once
-				//TODO стенки столкновения
+				gameStage.addChildAt(cell, gameStage.numChildren);
 			}
+		}
+		
+		public function checkPrize():void {
+			
 		}
 		
 		
