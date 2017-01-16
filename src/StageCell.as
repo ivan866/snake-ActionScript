@@ -20,7 +20,6 @@ package {
 		private var color:uint;
 		private var tremor:TweenMax;
 		public function StageCell(gameStage:GameStage, type:int, gameGraphicsStyle:GameGraphicsStyle) {
-			
 			this.gameStage = gameStage;
 			this.gameGraphicsStyle = gameGraphicsStyle;
 
@@ -73,6 +72,7 @@ package {
 		private var colorShape:Shape;
 		private function changeColor(color:uint):void {
 			if (type == -1) {
+				visible = false;
 				return;
 			}
 			
@@ -87,6 +87,8 @@ package {
 			addChild(borderShape);
 			borderShape.graphics.lineStyle(gameGraphicsStyle.fgLineWidth, gameGraphicsStyle.fgColor);
 			borderShape.graphics.drawRect(0, 0, stageParams.cellSize, stageParams.cellSize);
+
+			visible = true;
 		}
 		
 		private function tweenColor(color:uint,delay:Number,callback:Function):void {
@@ -95,8 +97,8 @@ package {
 		
 		private function getColorByType(type:int):uint {
 			var color:uint;
-			if (type == 0) {
-			color=gameGraphicsStyle.bgColor;
+			if (type == 0 || type==-1) {
+				color=gameGraphicsStyle.bgColor;
 			} else if (type == 1) {
 				color=wallColor;
 			} else if (type == 2) {

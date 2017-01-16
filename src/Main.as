@@ -61,7 +61,7 @@ package {
 				
 				if (!gameStage.hasPrize()) {
 					playerChar.win();
-				} else {				
+				} else {
 					moveTimer.start();
 				}
 			}

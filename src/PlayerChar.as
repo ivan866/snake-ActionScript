@@ -46,16 +46,17 @@ package {
 				gameStage.addChildAt(cell, gameStage.numChildren);
 
 				if (nextCell.getType() == 0) {
-					var tween:TweenMax = new TweenMax(cell, 0.75, {x: nextCellX * stageParams.cellSize, y: nextCellY * stageParams.cellSize, delay:0.25/getLength()*posI,ease: Elastic.easeInOut});
+					var tween:TweenMax = new TweenMax(cell, 0.5, {x: nextCellX * stageParams.cellSize, y: nextCellY * stageParams.cellSize, delay:0.25/getLength()*posI,ease: Elastic.easeInOut});
+					
+					gameStage.setCell(nextCellX, nextCellY, gameStage.exchangeCells(cellX, cellY, nextCellX, nextCellY));
+					
 					if (posI == getLength() - 1) {
 						tween.vars.onComplete = callback;
 						
 						moveCoords();
 					}
-
-					gameStage.setCell(nextCellX, nextCellY, gameStage.exchangeCells(cellX, cellY, nextCellX, nextCellY));
-				} else if (nextCell.getType() == 1 || nextCell.getType() == 100) {
-					die();
+				} else if (nextCell.getType() == 1 || nextCell.getType() == 100 || nextCell.getType() == -1) {
+					lose();
 					
 					break;
 				} else if (nextCell.getType() == 2) {
@@ -78,7 +79,9 @@ package {
 		public function moveCoords(grow:Boolean=false):void {
 			XYArray.unshift([XYArray[0][0] + speedX, XYArray[0][1] + speedY]);
 			if (!grow) {
-				XYArray.pop();
+				var lastCell:Array = XYArray.pop();
+				
+				gameStage.getCell(lastCell[0], lastCell[1]).setType( -1);
 			}
 		}
 		
@@ -90,7 +93,7 @@ package {
 		
 		public function win():void {
 			for (var posI:uint = 0; posI < getLength(); posI++) {
-				gameStage.getCell(XYArray[posI][0], XYArray[posI][1]).tweenType(2, 0.1*posI,tweenCompleteHandler);
+				gameStage.getCell(XYArray[posI][0], XYArray[posI][1]).tweenType(-1, 0.1*posI,tweenCompleteHandler);
 			}
 			
 			function tweenCompleteHandler():void {
@@ -100,7 +103,7 @@ package {
 			}
 		}
 		
-		public function die():void {
+		public function lose():void {
 			for (var posI:uint = 0; posI < getLength(); posI++) {
 				gameStage.getCell(XYArray[posI][0], XYArray[posI][1]).tweenType(1, 0.1*posI,tweenCompleteHandler);
 			}

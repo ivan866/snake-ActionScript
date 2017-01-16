@@ -2,7 +2,9 @@ package {
 	import com.greensock.TweenMax;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
 	/**
@@ -20,16 +22,14 @@ package {
 		public function GameStage(params:Object) {
 			this.params = params;
 			
-			var stageBorder:Sprite = new Sprite();
-			stageBorder.graphics.lineStyle(params.cellSize);
-			stageBorder.graphics.drawEllipse(params.cellSize / 2, params.cellSize / 2, params.cellXMax * params.cellSize - params.cellSize, params.cellYMax * params.cellSize - params.cellSize);
+			var stageShapes:Array = generateShapes();
+			var stageBorder:Shape = stageShapes[0];
+			var stageShape:Shape = stageShapes[1];
+			
 			stageBorderBitmap = new Bitmap(new BitmapData(stageBorder.width, stageBorder.height, true, 0x000000));
 			stageBorderBitmap.bitmapData.draw(stageBorder);
-			var stageShape:Sprite = new Sprite();
-			stageShape.graphics.beginFill(0xFFFFFF);
-			stageShape.graphics.drawEllipse(params.cellSize, params.cellSize, params.cellXMax * params.cellSize - params.cellSize * 2, params.cellYMax * params.cellSize - params.cellSize * 2);
-			stageShape.graphics.endFill();
-			stageShapeBitmap = new Bitmap(new BitmapData(stageShape.width + 100, stageShape.height + 100, true, 0x000000));
+			
+			stageShapeBitmap = new Bitmap(new BitmapData(stageShape.width, stageShape.height, true, 0x000000));
 			stageShapeBitmap.bitmapData.draw(stageShape);
 			
 			stageArray = [];
@@ -50,6 +50,46 @@ package {
 					}
 				}
 			}
+		}
+		
+		private function generateShapes(shapeCode:int = -1):Array {
+			if (shapeCode==-1) {
+				shapeCode = Math.floor(Math.random() * 3);
+			}
+			var stageBorder:Shape = new Shape();
+			var stageShape:Shape = new Shape();
+			if (shapeCode == 0) {
+				stageBorder.graphics.lineStyle(params.cellSize);
+				stageBorder.graphics.drawEllipse(params.cellSize/2,params.cellSize/2,params.cellXMax*params.cellSize-params.cellSize,params.cellYMax*params.cellSize-params.cellSize);
+			
+				stageShape.graphics.beginFill(0xFFFFFF);
+				stageShape.graphics.drawEllipse(params.cellSize/2,params.cellSize/2,params.cellXMax*params.cellSize-params.cellSize,params.cellYMax*params.cellSize-params.cellSize);
+				stageShape.graphics.endFill();
+			} else if (shapeCode == 1) {
+				stageBorder.graphics.lineStyle(params.cellSize);
+				stageBorder.graphics.moveTo(0,(params.cellYMax-1)*params.cellSize);
+				stageBorder.graphics.lineTo(params.cellXMax / 2 * params.cellSize, 0);
+				stageBorder.graphics.lineTo(params.cellXMax * params.cellSize, (params.cellYMax-1) * params.cellSize);
+				stageBorder.graphics.lineTo(0,(params.cellYMax-1)*params.cellSize);
+			
+				stageShape.graphics.beginFill(0xFFFFFF);
+				stageShape.graphics.moveTo(0,(params.cellYMax-1)*params.cellSize);
+				stageShape.graphics.lineTo(params.cellXMax / 2 * params.cellSize, 0);
+				stageShape.graphics.lineTo(params.cellXMax * params.cellSize, (params.cellYMax-1) * params.cellSize);
+				stageShape.graphics.lineTo(0,(params.cellYMax-1)*params.cellSize);
+				stageShape.graphics.endFill();
+			} else if (shapeCode == 2) {
+				stageBorder.graphics.lineStyle(params.cellSize);
+				stageBorder.graphics.drawRect(0,0,(params.cellXMax-1)*params.cellSize,(params.cellYMax-1)*params.cellSize);
+				stageBorder.graphics.drawRect(params.cellXMax / 4*params.cellSize, params.cellYMax / 4*params.cellSize, (params.cellXMax-1) / 2*params.cellSize, (params.cellYMax-1) / 2*params.cellSize);
+				
+				stageShape.graphics.beginFill(0xFFFFFF);
+				stageShape.graphics.drawRect(0,0,(params.cellXMax-1)*params.cellSize,(params.cellYMax-1)*params.cellSize);
+				stageShape.graphics.drawRect(params.cellXMax / 4*params.cellSize, params.cellYMax / 4*params.cellSize, (params.cellXMax-1) / 2*params.cellSize, (params.cellYMax-1) / 2*params.cellSize);
+				stageShape.graphics.endFill();
+			}
+			
+			return [stageBorder,stageShape];
 		}
 		
 		
