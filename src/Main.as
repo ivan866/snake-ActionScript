@@ -57,7 +57,13 @@ package {
 			playerChar.move(moveCompleteHandler);
 			
 			function moveCompleteHandler():void {
-				moveTimer.start();
+				playerChar.setTremor();
+				
+				if (!gameStage.hasPrize()) {
+					playerChar.win();
+				} else {				
+					moveTimer.start();
+				}
 			}
 		}
 	

@@ -24,41 +24,98 @@ package {
 		
 		
 		public function move(callback:Function):void {
-			for (var posI:uint = 0; posI < XYArray.length; posI++) {
+			for (var posI:uint = 0; posI < getLength(); posI++) {
 				var stageParams:Object = gameStage.getStageParams();
 				
 				var cellX:uint = XYArray[posI][0];
 				var cellY:uint = XYArray[posI][1];
 				var cell:StageCell = gameStage.getCell(cellX, cellY);
-				var nextCellX:uint = cellX + speedX;
-				var nextCellY:uint = cellY + speedY;
-				var nextCell:StageCell = gameStage.getCell(nextCellX, nextCellY);
-								
-				if (nextCell.getType() == 0) {
-					new TweenMax(cell, 0.75, {x: nextCellX * stageParams.cellSize, y: nextCellY * stageParams.cellSize, ease: Elastic.easeInOut, onComplete: callback});
-					gameStage.setCell(nextCellX, nextCellY, gameStage.exchangeCells(nextCellX, nextCellY, cellX, cellY));
-				} else if (nextCell.getType() == 1) {
-					
-				} else if (nextCell.getType() == 2) {
-					nextCell.setType(100);
-					
-					checkPrize();
+				if (posI == 0) {
+					var nextCellX:uint = cellX + speedX;
+					var nextCellY:uint = cellY + speedY;
+				} else {
+					var nextCellX:uint = XYArray[posI-1][0];
+					var nextCellY:uint = XYArray[posI-1][1];
 				}
+				var nextCell:StageCell = gameStage.getCell(nextCellX, nextCellY);
 				
-				XYArray[posI][0] = nextCellX;
-				XYArray[posI][1] = nextCellY;
 				lastSpeedX = speedX;
 				lastSpeedY = speedY;
 				
 				//TODO addchildat once
 				gameStage.addChildAt(cell, gameStage.numChildren);
+
+				if (nextCell.getType() == 0) {
+					var tween:TweenMax = new TweenMax(cell, 0.75, {x: nextCellX * stageParams.cellSize, y: nextCellY * stageParams.cellSize, delay:0.25/getLength()*posI,ease: Elastic.easeInOut});
+					if (posI == getLength() - 1) {
+						tween.vars.onComplete = callback;
+						
+						moveCoords();
+					}
+
+					gameStage.setCell(nextCellX, nextCellY, gameStage.exchangeCells(cellX, cellY, nextCellX, nextCellY));
+				} else if (nextCell.getType() == 1 || nextCell.getType() == 100) {
+					die();
+					
+					break;
+				} else if (nextCell.getType() == 2) {
+					nextCell.tweenType(100, 0,tweenCompleteHandler);
+					
+					moveCoords(true);
+					
+					break;
+					
+					function tweenCompleteHandler():void {
+						gameStage.removePrize();
+						
+						callback();
+					}
+				}
+				
 			}
 		}
 		
-		public function checkPrize():void {
-			
+		public function moveCoords(grow:Boolean=false):void {
+			XYArray.unshift([XYArray[0][0] + speedX, XYArray[0][1] + speedY]);
+			if (!grow) {
+				XYArray.pop();
+			}
 		}
 		
+		public function setTremor():void {
+			for (var posI:uint = 0; posI < getLength(); posI++) {
+				gameStage.getCell(XYArray[posI][0], XYArray[posI][1]).setTremor();
+			}
+		}
+		
+		public function win():void {
+			for (var posI:uint = 0; posI < getLength(); posI++) {
+				gameStage.getCell(XYArray[posI][0], XYArray[posI][1]).tweenType(2, 0.1*posI,tweenCompleteHandler);
+			}
+			
+			function tweenCompleteHandler():void {
+				if (posI==getLength()-1) {
+					setTremor();
+				}
+			}
+		}
+		
+		public function die():void {
+			for (var posI:uint = 0; posI < getLength(); posI++) {
+				gameStage.getCell(XYArray[posI][0], XYArray[posI][1]).tweenType(1, 0.1*posI,tweenCompleteHandler);
+			}
+			
+			function tweenCompleteHandler():void {
+				if (posI==getLength()-1) {
+					setTremor();
+				}
+			}
+		}
+
+		
+		private function getLength():uint {
+			return XYArray.length;
+		}
 		
 		private var speedX:int;
 		private var speedY:int;

@@ -16,6 +16,7 @@ package {
 		private var gameGraphicsStyle:GameGraphicsStyle;
 		private var stageBorderBitmap:Bitmap;
 		private var stageShapeBitmap:Bitmap;
+		private var prizeNum:uint;
 		public function GameStage(params:Object) {
 			this.params = params;
 			
@@ -32,6 +33,7 @@ package {
 			stageShapeBitmap.bitmapData.draw(stageShape);
 			
 			stageArray = [];
+			prizeNum = 0;
 			for (var cellX:uint = 0; cellX < params.cellXMax; cellX++) {
 				stageArray[cellX] = [];
 				for (var cellY:uint = 0; cellY < params.cellYMax; cellY++) {
@@ -41,6 +43,7 @@ package {
 						stageArray[cellX][cellY] = 0;
 						if (Math.floor(Math.random() * 50) == 2) {
 							stageArray[cellX][cellY] = 2;
+							prizeNum++;
 						}
 					} else {
 						stageArray[cellX][cellY] = -1;
@@ -81,10 +84,18 @@ package {
 		}
 		
 		public function exchangeCells(cellX:uint, cellY:uint, newCellX:uint, newCellY:uint):StageCell {
-			var exchange:StageCell = stageArray[newCellX][newCellY];
-			setCell(newCellX, newCellY, stageArray[cellX][cellY]);
-			getCell(newCellX, newCellY).setXY(newCellX * params.cellSize, newCellY * params.cellSize);
+			var exchange:StageCell = getCell(cellX,cellY);
+			setCell(cellX, cellY, getCell(newCellX, newCellY));
+			getCell(cellX, cellY).setXY(cellX * params.cellSize, cellY * params.cellSize);
 			return exchange;
+		}
+		
+		public function removePrize():void {
+			prizeNum--;
+		}
+		
+		public function hasPrize():Boolean {
+			return prizeNum > 0;
 		}
 	
 	}
