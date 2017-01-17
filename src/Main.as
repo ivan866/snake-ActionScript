@@ -15,11 +15,12 @@ package {
 		
 		private var moveTimer:Timer;
 		public function Main() {
-			board = new Board({xMax: 24, yMax: 16, size: 32, delay: 2500});
+			board = new Board({xMax: 50, yMax: 30, size: 16});
 			board.drawBoard();
+			board.digitalRain();
 			
-			board.x = stage.stageWidth / 2 - board.width / 2;
-			board.y = stage.stageHeight / 2 - board.height / 2;
+			board.x = stage.stageWidth / 2 - board.width / 2 + 12;
+			board.y = stage.stageHeight / 2 - board.height / 2 + 6;
 			stage.addChild(board);
 			
 			stage.color = 0x000000;

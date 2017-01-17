@@ -28,8 +28,6 @@ package {
 			var playerCell:Cell = board.getCell(XYArray[0][0], XYArray[0][1]);
 			playerCell.setType(4);
 			
-			board.addChildAt(playerCell, board.numChildren);
-			
 			reset();
 		}
 		
@@ -41,6 +39,7 @@ package {
 				var cellX:uint = XYArray[posI][0];
 				var cellY:uint = XYArray[posI][1];
 				var cell:Cell = board.getCell(cellX, cellY);
+				
 				if (posI == 0) {
 					var nextCellX:uint = cellX + speedX;
 					var nextCellY:uint = cellY + speedY;
@@ -52,25 +51,28 @@ package {
 				
 				lastSpeedX = speedX;
 				lastSpeedY = speedY;
-				
-				if (nextCell.getType() == 1) {
-					board.setCell(nextCellX, nextCellY, board.exchangeCells(cellX, cellY, nextCellX, nextCellY));
-					board.getCell(nextCellX, nextCellY).setXY(nextCellX, nextCellY);
-					
-					if (posI == getLength() - 1) {
+
+				if (nextCell.getType() == 1 || (posI == 0 && XYArray[getLength() - 1][0] == nextCellX && XYArray[getLength() - 1][1] == nextCellY)) {
+					if (posI == 0 && XYArray[getLength() - 1][0] == nextCellX && XYArray[getLength() - 1][1] == nextCellY) {
 						moveCoords();
+						
+						break;
+					} else {
+						board.setCell(nextCellX, nextCellY, board.exchangeCells(cellX, cellY, nextCellX, nextCellY));
+						board.getCell(nextCellX, nextCellY).setXY(nextCellX * boardParams.size, nextCellY * boardParams.size);
+						if (posI == getLength() - 1) {
+							moveCoords();
+						}
 					}
-				} else if (nextCell.getType() == 0 || nextCell.getType() == 1 || nextCell.getType() == 4) {
+				} else if (nextCell.getType() == 0 || nextCell.getType() == 2 || nextCell.getType() == 4) {
 					stop();
 					
 					looser = true;
 					
 					break;
 				} else if (nextCell.getType() == 3) {
-					nextCell.setType(3);
+					nextCell.setType(4);
 
-					board.addChildAt(nextCell, board.numChildren);
-					
 					moveCoords(true);
 					
 					board.removePrize();
@@ -78,6 +80,8 @@ package {
 					if (!board.hasPrize()) {
 						winner = true;
 					}
+					
+					break;
 				}
 				
 			}
@@ -86,17 +90,20 @@ package {
 		
 		public function moveCoords(grow:Boolean=false):void {
 			XYArray.unshift([XYArray[0][0] + speedX, XYArray[0][1] + speedY]);
-			
 			if (!grow) {
-				var lastCell:Array = XYArray.pop();
-				
-				board.getCell(lastCell[0], lastCell[1]).decreaseDelay();
+				XYArray.pop();
+			}
+			
+			board.getCell(XYArray[0][0], XYArray[0][1]).setType(4);
+			for (var i:int = 1; i < getLength(); i++) {
+				board.getCell(XYArray[i][0], XYArray[i][1]).setType(4, false);
 			}
 		}
 		
 		
 		public function stop():void {
 			setSpeed(0, 0);
+			
 			lastSpeedX = 0;
 			lastSpeedY = 0;
 		}
