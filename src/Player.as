@@ -32,6 +32,7 @@ package {
 		}
 		
 		
+		private var growNum:uint;
 		public function move():void {
 			for (var posI:uint = 0; posI < getLength(); posI++) {
 				var boardParams:Object = board.getBoardParams();
@@ -54,14 +55,24 @@ package {
 
 				if (nextCell.getType() == 1 || (posI == 0 && XYArray[getLength() - 1][0] == nextCellX && XYArray[getLength() - 1][1] == nextCellY)) {
 					if (posI == 0 && XYArray[getLength() - 1][0] == nextCellX && XYArray[getLength() - 1][1] == nextCellY) {
-						moveCoords();
+						//if (growNum) {
+							//nextCell.setType(4);
+							//moveCoords(true);
+						//} else {
+							moveCoords();
+						//}
 						
 						break;
 					} else {
 						board.setCell(nextCellX, nextCellY, board.exchangeCells(cellX, cellY, nextCellX, nextCellY));
 						board.getCell(nextCellX, nextCellY).setXY(nextCellX * boardParams.size, nextCellY * boardParams.size);
 						if (posI == getLength() - 1) {
-							moveCoords();
+							//if (growNum) {
+								//nextCell.setType(4);
+								//moveCoords(true);
+							//} else {
+								moveCoords();
+							//}
 						}
 					}
 				} else if (nextCell.getType() == 0 || nextCell.getType() == 2 || nextCell.getType() == 4) {
@@ -71,12 +82,12 @@ package {
 					
 					break;
 				} else if (nextCell.getType() == 3) {
+					//growNum += 3;
+					
 					nextCell.setType(4);
-
 					moveCoords(true);
 					
 					board.removePrize();
-						
 					if (!board.hasPrize()) {
 						winner = true;
 					}
@@ -90,6 +101,9 @@ package {
 		
 		public function moveCoords(grow:Boolean=false):void {
 			XYArray.unshift([XYArray[0][0] + speedX, XYArray[0][1] + speedY]);
+			if (grow) {
+				growNum--;
+			}
 			if (!grow) {
 				XYArray.pop();
 			}
@@ -110,6 +124,8 @@ package {
 		
 		public function reset():void {
 			stop();
+			
+			growNum = 3;
 			
 			winner = false;
 			looser = false;
@@ -135,19 +151,15 @@ package {
 		
 		private var speedX:int;
 		private var speedY:int;
-		private var lastSpeedX:int;
-		private var lastSpeedY:int;
-		public function getSpeed():Object {
-			return {x:speedX, y:speedY};
-		}
-		
-		public function getLastSpeed():Object {
-			return {x:lastSpeedX, y:lastSpeedY};
-		}
-		
 		public function setSpeed(speedX:int, speedY:int):void {
 			this.speedX = speedX;
 			this.speedY = speedY;
+		}
+		
+		private var lastSpeedX:int;
+		private var lastSpeedY:int;
+		public function getLastSpeed():Object {
+			return {x:lastSpeedX, y:lastSpeedY};
 		}
 	
 	}

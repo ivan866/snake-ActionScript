@@ -19,8 +19,8 @@ package {
 			board.drawBoard();
 			board.digitalRain();
 			
-			board.x = stage.stageWidth / 2 - board.width / 2 + 12;
-			board.y = stage.stageHeight / 2 - board.height / 2 + 6;
+			board.x = stage.stageWidth / 2 - board.width / 2 + 5;
+			board.y = stage.stageHeight / 2 - board.height / 2;
 			stage.addChild(board);
 			
 			stage.color = 0x000000;
@@ -43,15 +43,16 @@ package {
 		}
 		
 		
+		private var lastSpeed:Object;
 		private function keyHandler(e:KeyboardEvent):void {
-			var speed:Object = player.getLastSpeed();
-			if (e.keyCode == 37 && speed.x != 1) {
+			lastSpeed = player.getLastSpeed();
+			if (e.keyCode == 37 && lastSpeed.x != 1) {
 				player.setSpeed(-1,0);
-			} else if (e.keyCode == 38 && speed.y != 1) {
+			} else if (e.keyCode == 38 && lastSpeed.y != 1) {
 				player.setSpeed(0,-1);
-			} else if (e.keyCode == 39 && speed.x != -1) {
+			} else if (e.keyCode == 39 && lastSpeed.x != -1) {
 				player.setSpeed(1,0);
-			} else if (e.keyCode == 40 && speed.y != -1) {
+			} else if (e.keyCode == 40 && lastSpeed.y != -1) {
 				player.setSpeed(0,1);
 			}
 			

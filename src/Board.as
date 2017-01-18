@@ -1,9 +1,12 @@
 package {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.CapsStyle;
+	import flash.display.LineScaleMode;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
+	import flash.filters.GlowFilter;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
@@ -18,9 +21,9 @@ package {
 	public class Board extends Sprite {
 		public const type0Chars:Array = [" "];
 		public const type1Chars:Array = type0Chars;
-		public const type2Chars:Array = ["ə", "ə", "ɰ", "‡", "‡", "‡", "ᶲ", "ᵷ", "ᵵ", "ᵴ", "ђ", "Ƶ", "Ƶ"];
+		public const type2Chars:Array = ["ə", "ə", "ɰ", "‡", "‡", "‡", "ᶲ", "ᵷ", "ᵵ", "ᵴ", "ђ", "Ƶ", "Ƶ", "χ", "χ", "χ"];
 		public const type3Chars:Array = ["2", "2", "3", "5", "7", "7", "7", "8", "9", "9"];
-		public const type4Chars:Array = ["s","ȵ","ɐ","Ɫ","r","i","x"];
+		public const type4Chars:Array = ["S", "N", "A", "T", "R", "I", "X"];	//["ƻ", "ȵ", "ɐ", "Ɫ", "ʁ", "‡", "χ"];
 		public const typeChars:Array = [type0Chars, type1Chars, type2Chars, type3Chars, type4Chars];
 		
 		public var charBitmaps:Array;
@@ -51,11 +54,13 @@ package {
 			text.text = type0Chars.join(" ") + "\n" + type1Chars.join(" ") + "\n" + type2Chars.join(" ") + "\n" + type3Chars.join(" ") + "\n" + type4Chars.join(" ");
 			text.setTextFormat(new TextFormat("Courier New", 24, 0x5C985F, true));
 			text.autoSize = TextFieldAutoSize.LEFT;
+			text.filters = [new GlowFilter(0xB9D0BB, 0.5, 12, 12)];
 			
 			var textLit:TextField = new TextField();
 			textLit.text = text.text;
 			textLit.setTextFormat(new TextFormat("Courier New", 24, 0xB9D0BB, true));
 			textLit.autoSize = text.autoSize;
+			textLit.filters = [new GlowFilter(0x5C985F, 0.5, 12, 12)];
 			
 			var bitmap:Bitmap = new Bitmap(new BitmapData(text.width, text.height, true, 0xff0000));
 			bitmap.bitmapData.draw(text);
@@ -72,11 +77,11 @@ package {
 				charBitmaps[typeI] = [];
 				charBitmapsLit[typeI] = [];
 				for (var charI:uint = 0; charI < chars.length; charI++) {
-					var charBitmap:BitmapData = new BitmapData(44, 41, true, 0x000000);
+					var charBitmap:BitmapData = new BitmapData(28, 28, true, 0x000000);
 					charBitmap.copyPixels(bitmap.bitmapData, new Rectangle(charI * 28, typeI * 28, 28, 28), new Point());
 					charBitmaps[typeI][charI] = charBitmap;
 					
-					var charBitmapLit:BitmapData = new BitmapData(44, 41, true, 0x000000);
+					var charBitmapLit:BitmapData = new BitmapData(28, 28, true, 0x000000);
 					charBitmapLit.copyPixels(bitmapLit.bitmapData, new Rectangle(charI * 28, typeI * 28, 28, 28), new Point());
 					charBitmapsLit[typeI][charI] = charBitmapLit;
 				}
@@ -111,7 +116,7 @@ package {
 					}
 				}
 			}
-			while (prizeNum < 8) {
+			while (prizeNum < 32) {
 				cellX = Math.floor(Math.random() * params.xMax);
 				cellY = Math.floor(Math.random() * params.yMax);
 				if (typesArray[cellX][cellY] == 1) {
@@ -130,14 +135,14 @@ package {
 			boardBorder.graphics.clear();
 			boardShape.graphics.clear();
 			if (shapeCode == 0) {
-				boardBorder.graphics.lineStyle(params.size);
+				boardBorder.graphics.lineStyle(params.size*2,0,1,true,LineScaleMode.NORMAL,CapsStyle.SQUARE);
 				boardBorder.graphics.drawEllipse(params.size/2,params.size/2,params.xMax*params.size-params.size,params.yMax*params.size-params.size);
 			
 				boardShape.graphics.beginFill(0xFFFFFF);
 				boardShape.graphics.drawEllipse(params.size/2,params.size/2,params.xMax*params.size-params.size,params.yMax*params.size-params.size);
 				boardShape.graphics.endFill();
 			} else if (shapeCode == 1) {
-				boardBorder.graphics.lineStyle(params.size);
+				boardBorder.graphics.lineStyle(params.size*2,0,1,true,LineScaleMode.NORMAL,CapsStyle.SQUARE);
 				boardBorder.graphics.moveTo(0,(params.yMax-1)*params.size);
 				boardBorder.graphics.lineTo(params.xMax / 2 * params.size, 0);
 				boardBorder.graphics.lineTo(params.xMax * params.size, (params.yMax-1) * params.size);
@@ -150,13 +155,35 @@ package {
 				boardShape.graphics.lineTo(0,(params.yMax-1)*params.size);
 				boardShape.graphics.endFill();
 			} else if (shapeCode == 2) {
-				boardBorder.graphics.lineStyle(params.size);
-				boardBorder.graphics.drawRect(0,0,(params.xMax-1)*params.size,(params.yMax-1)*params.size);
-				boardBorder.graphics.drawRect(params.xMax / 4*params.size, params.yMax / 4*params.size, (params.xMax-1) / 2*params.size, (params.yMax-1) / 2*params.size);
+				boardBorder.graphics.lineStyle(params.size*2,0,1,true,LineScaleMode.NORMAL,CapsStyle.SQUARE);
+				boardBorder.graphics.moveTo(params.xMax/2*params.size,params.yMax*0.33*params.size);
+				boardBorder.graphics.lineTo(params.xMax * 0.66 * params.size, 0);
+				boardBorder.graphics.lineTo(params.xMax * params.size, 0);
+				boardBorder.graphics.lineTo(params.xMax * 0.66 * params.size, params.yMax / 2 * params.size);
+				boardBorder.graphics.lineTo(params.xMax * params.size, params.yMax * params.size);
+				boardBorder.graphics.lineTo(params.xMax * 0.66 * params.size, params.yMax * params.size);
+				boardBorder.graphics.lineTo(params.xMax / 2 * params.size, params.yMax * 0.66 * params.size);
+				boardBorder.graphics.lineTo(params.xMax * 0.33 * params.size, params.yMax * params.size);
+				boardBorder.graphics.lineTo(0, params.yMax * params.size);
+				boardBorder.graphics.lineTo(params.xMax * 0.33 * params.size, params.yMax / 2 * params.size);
+				boardBorder.graphics.lineTo(0, 0);
+				boardBorder.graphics.lineTo(params.xMax * 0.33 * params.size, 0);
+				boardBorder.graphics.lineTo(params.xMax / 2 * params.size, params.yMax * 0.33 * params.size);
 				
 				boardShape.graphics.beginFill(0xFFFFFF);
-				boardShape.graphics.drawRect(0,0,(params.xMax-1)*params.size,(params.yMax-1)*params.size);
-				boardShape.graphics.drawRect(params.xMax / 4*params.size, params.yMax / 4*params.size, (params.xMax-1) / 2*params.size, (params.yMax-1) / 2*params.size);
+				boardShape.graphics.moveTo(params.xMax/2*params.size,params.yMax*0.33*params.size);
+				boardShape.graphics.lineTo(params.xMax * 0.66 * params.size, 0);
+				boardShape.graphics.lineTo(params.xMax * params.size, 0);
+				boardShape.graphics.lineTo(params.xMax * 0.66 * params.size, params.yMax / 2 * params.size);
+				boardShape.graphics.lineTo(params.xMax * params.size, params.yMax * params.size);
+				boardShape.graphics.lineTo(params.xMax * 0.66 * params.size, params.yMax * params.size);
+				boardShape.graphics.lineTo(params.xMax / 2 * params.size, params.yMax * 0.66 * params.size);
+				boardShape.graphics.lineTo(params.xMax * 0.33 * params.size, params.yMax * params.size);
+				boardShape.graphics.lineTo(0, params.yMax * params.size);
+				boardShape.graphics.lineTo(params.xMax * 0.33 * params.size, params.yMax / 2 * params.size);
+				boardShape.graphics.lineTo(0, 0);
+				boardShape.graphics.lineTo(params.xMax * 0.33 * params.size, 0);
+				boardShape.graphics.lineTo(params.xMax / 2 * params.size, params.yMax * 0.33 * params.size);
 				boardShape.graphics.endFill();
 			}
 		}
@@ -194,11 +221,12 @@ package {
 		public function digitalRain():void {
 			rainTimerArray = [];
 			for (var i:int = 0; i < params.xMax; i++) {
-				rainTimerArray[i] = new Timer(Math.random() * 250 + 250, params.yMax);
+				rainTimerArray[i] = new Timer(Math.random() * 150 + 150, params.yMax);
 				rainTimerArray[i].addEventListener(TimerEvent.TIMER, rainHandler);
+				rainTimerArray[i].addEventListener(TimerEvent.TIMER_COMPLETE, rainCompleteHandler);
 			}
 			
-			rainStartTimer = new Timer(1000, rainTimerArray.length);
+			rainStartTimer = new Timer(500, rainTimerArray.length);
 			rainStartTimer.addEventListener(TimerEvent.TIMER, rainStartHandler);
 			rainStartTimer.start();
 		}
@@ -210,8 +238,11 @@ package {
 			timer.start();
 		}
 		private function rainHandler(e:TimerEvent) {
-			var i:uint = rainTimerArray.indexOf(e.target);
-			getCell(i, e.target.currentCount - 1).setType(getCell(i, e.target.currentCount - 1).getType());
+			getCell(rainTimerArray.indexOf(e.target), e.target.currentCount-1).setType();
+		}
+		private function rainCompleteHandler(e:TimerEvent) {
+			e.target.reset();
+			e.target.start();
 		}
 		
 		

@@ -2,7 +2,6 @@ package {
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
-	import flash.filters.GlowFilter;
 	import flash.utils.Timer;
 	
 	/**
@@ -12,18 +11,24 @@ package {
 	public class Cell extends Sprite {
 		private var board:Board;
 		
+		private var typeI:uint;
+		private var typeIToggle:Boolean = true;
+		private var typeIArray:Array = [0, 2];
 		private var type:int;
 		
 		private var bitmap:Bitmap;
 		
-		private var filterTimer:Timer;
+		private var litTimer:Timer;
+		private var blinkTimer:Timer;
 		public function Cell(board:Board, type:int) {
 			this.board = board;
 			
 			bitmap = new Bitmap();
 			
-			filterTimer = new Timer(500, 1);
-			filterTimer.addEventListener(TimerEvent.TIMER, filterHandler);
+			litTimer = new Timer(500, 1);
+			litTimer.addEventListener(TimerEvent.TIMER, litHandler);
+			blinkTimer = new Timer(0);
+			blinkTimer.addEventListener(TimerEvent.TIMER, blinkHandler);
 			
 			addChild(bitmap);
 			
@@ -43,31 +48,42 @@ package {
 		
 		
 		private var charI:uint;
-		private var typeI:int =-1;
-		public function setType(type:int, lit:Boolean = true):void {
-			this.type = type;
-			
-			if (type == 0 && typeI == 0) {
-				typeI = 2;
-			} else {
-				typeI = type;
+		public function setType(type:int = -1, lit:Boolean = true):void {
+			if (type != -1) {
+				this.type = type;
 			}
+			
+			typeI = this.type;
+			if (this.type == 0) {
+				typeIToggle = !typeIToggle;
+				typeI = typeIArray[uint(typeIToggle)];
+			}
+			
 			charI = Math.floor(Math.random() * board.charBitmapsLit[typeI].length);
 			if (lit) {
 				bitmap.bitmapData = board.charBitmapsLit[typeI][charI].clone();
-				bitmap.filters = [new GlowFilter(0xB9D0BB, 0.75, 12, 12)];
 			
-				filterTimer.start();
+				litTimer.start();
 			} else {
-				filterHandler();
+				litHandler();
+			}
+			
+			if (this.type == 2 || this.type == 3) {
+				blinkTimer.start();
+			} else {
+				blinkTimer.stop();
 			}
 		}
 		
-		private function filterHandler(e:TimerEvent = null):void {
-			filterTimer.reset();
+		private function litHandler(e:TimerEvent = null):void {
+			litTimer.reset();
 			
 			bitmap.bitmapData = board.charBitmaps[typeI][charI].clone();
-			bitmap.filters = [new GlowFilter(0x5C985F, 0.75, 12, 12)];
+		}
+		private function blinkHandler(e:TimerEvent = null):void {
+			blinkTimer.delay = Math.random() * 500 + 500;
+			
+			setType();
 		}
 		
 	
